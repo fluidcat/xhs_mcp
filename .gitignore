@@ -7,3 +7,5 @@ pyproject.toml
 __pycache__
 .pytest_cache
 .vscode
+mcp-server.log
+mcp-server.pid
