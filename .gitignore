@@ -1,0 +1,9 @@
+xiaohongshu_auth.json
+.idea
+.venv
+venv
+.python-version
+pyproject.toml
+__pycache__
+.pytest_cache
+.vscode

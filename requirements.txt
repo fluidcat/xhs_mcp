@@ -1,0 +1,7 @@
+playwright-stealth
+filetype
+aiohttp
+fastmcp==2.10.5
+setuptools
+loguru
+playwright
