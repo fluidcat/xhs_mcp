@@ -25,10 +25,12 @@ class XiaohongshuBrowser:
         self.auth_file = Path(__file__).resolve().parent / "xiaohongshu_auth.json"
 
     async def _setup_browser(self):
+        if not os.path.exists(self.auth_file):
+            with open(self.auth_file, "w") as f:
+                f.write("{}")
         # 快速检查 CDP 是否可用
         if not await self.is_cdp_available(self.cdp_url):
             raise Exception("CDP URL 不可用")
-
         # 获取 WebSocket URL
         ws_url = await self.get_ws_url(self.cdp_url)
         stealth = Stealth(
