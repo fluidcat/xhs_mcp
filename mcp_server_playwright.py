@@ -162,19 +162,26 @@ browsers = {
 }
 
 
-async def preferred_browser() -> XiaohongshuBrowser:
+async def select_active_browser() -> XiaohongshuBrowser:
     for browser_id, browser in browsers.items():
         try:
             await browser._ensure_browser()
-            ok = await browser._check_login_status()
-            if ok:
-                print(f"优先使用 {browser_id} 浏览器")
-                return browser
+            print(f"优先使用 {browser_id} 浏览器")
+            return browser
         except Exception as e:
             print(e)
 
     print(f"没有可用浏览器")
     raise RuntimeError("没有可用浏览器")
+
+
+async def preferred_browser() -> XiaohongshuBrowser:
+    browser = await select_active_browser()
+    ok = await browser._check_login_status()
+    if ok:
+        return browser
+    print(f"未登录小红书账号")
+    raise RuntimeError("未登录小红书账号")
 
 
 async def clean_browsers():
@@ -206,16 +213,16 @@ async def scroll():
 @mcp.tool()
 async def login() -> Dict[str, Any]:
     """小红书登录"""
-    bowser = await preferred_browser()
-    page = bowser.page
+    bowser = await select_active_browser()
+    await bowser._check_login_status()
     try:
         if bowser.is_logged_in:
             return {"success": True, "message": "已是登录状态"}
 
-        await page.goto("https://www.xiaohongshu.com/", wait_until="domcontentloaded")
+        await bowser.page.goto("https://www.xiaohongshu.com/", wait_until="domcontentloaded")
         # 这里建议人工扫码或手动登录
         print("请手动完成登录...")
-        await page.wait_for_selector(".reds-avatar", timeout=120000)
+        await bowser.page.wait_for_selector(".reds-avatar", timeout=120000)
         bowser.is_logged_in = True
         await bowser._save_session()
         return {"success": True, "message": "登录成功"}
@@ -561,7 +568,7 @@ async def upload_image_first(image: Union[pathlib.Path, str]):
     await file_chooser.set_files(file_payload)
 
     # 等待上传完成
-    await page.wait_for_load_state("networkidle")
+    await human_wait(page,min_ms=1000, max_ms=2000)
 
     # 等待跳转
     await page.wait_for_selector(".post-page")
@@ -620,7 +627,7 @@ async def upload_image(images: list[Union[pathlib.Path, str]]) -> Optional[str]:
             await file_chooser.set_files(file_payload)
 
             # 等待上传完成
-            await page.wait_for_load_state("networkidle")
+            await human_wait(page,min_ms=1000, max_ms=2000)
 
     except Exception as e:
         print(f"图片上传失败: {str(e)}")
