@@ -434,7 +434,7 @@ async def post_comment(article_url: str, comment_text: str) -> Dict[str, Any]:
 
 
 @mcp.tool()
-async def post_note(title: str, abstract: str, content: str, tags: Optional[list[str]] = None,
+async def post_note(title: str, content: str, abstract: Optional[str]=None, tags: Optional[list[str]] = None,
                     image: Optional[list[Union[pathlib.Path, str]]] = None) -> Dict[str, Any]:
     """
     发布笔记
