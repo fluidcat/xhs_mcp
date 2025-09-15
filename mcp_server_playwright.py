@@ -5,6 +5,7 @@ import pathlib
 import random
 from pathlib import Path
 from typing import Dict, Any, Optional, Union
+from urllib.parse import urlparse, unquote
 
 import aiohttp
 import filetype
@@ -438,7 +439,7 @@ async def post_note(title: str, abstract: str, content: str, tags: Optional[list
     """
     发布笔记
     args:
-        title: 笔记标题，必填
+        title: 笔记标题，必填，最长20个字
         abstract: 笔记摘要，归纳笔记要点，列表形式每行一条，非必填但图片和摘要二选一
         content: 笔记正文（正文最后不包含笔记标签）
         tags: 笔记话题标签
@@ -590,14 +591,14 @@ async def get_file(file: Union[str, pathlib.Path]):
                 async with session.get(file, timeout=10) as resp:
                     if resp.status == 200:
                         file_byte = await resp.read()
-            file_name = os.path.basename(file)
+            file_name = os.path.basename(unquote(urlparse(file).path))
         else:
             return None
 
-        if mime_types := mimetypes.guess_type(file_name):
-            mime_type, _ = mime_types
-        elif kind := filetype.guess(file_byte):
+        if kind := filetype.guess(file_byte):
             mime_type = kind.mime
+        elif mime_types := mimetypes.guess_type(file_name):
+            mime_type, _ = mime_types
         else:
             mime_type = "application/octet-stream"
         file = {
