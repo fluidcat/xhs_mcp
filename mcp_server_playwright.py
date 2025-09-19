@@ -186,18 +186,30 @@ async def preferred_browser() -> XiaohongshuBrowser:
 
 
 async def clean_browsers():
-    for b in browsers:
+    for b in browsers.values():
         try:
             await b._close_browser()
         except:
             continue
     return {"success": True, "message": "浏览器资源已完全清理"}
 
+import asyncio
+def handle_shutdown(signum, frame):
+    """处理关机信号"""
+    print(f"接收到关机信号 {signum}, 正在清理资源...")    
+    asyncio.create_task(clean_browsers())
+    print("资源清理完成，程序退出")
+
+import signal
+signal.signal(signal.SIGINT, handle_shutdown)  # Ctrl+C
+signal.signal(signal.SIGTERM, handle_shutdown)  # kill命令
 
 @atexit.register
 def cleanup():
-    import asyncio
+    """程序退出时的清理"""
+    print("程序退出，cleanup正在清理资源...")
     asyncio.run(clean_browsers())
+    print("资源清理完成")
 
 
 @mcp.tool()
