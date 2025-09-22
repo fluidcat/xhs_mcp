@@ -212,7 +212,7 @@ def cleanup():
     print("资源清理完成")
 
 
-@mcp.tool()
+# @mcp.tool()
 async def scroll():
     page = (await preferred_browser()).page
     await page.evaluate("""
@@ -245,7 +245,7 @@ async def login() -> Dict[str, Any]:
         return {"success": False, "message": f"登录失败: {str(e)}"}
 
 
-@mcp.tool()
+# @mcp.tool()
 async def get_current_page_articles() -> Dict[str, Any]:
     return await parse_current_page_articles()
 
@@ -282,7 +282,7 @@ async def parse_current_page_articles() -> Dict[str, Any]:
         return {"success": False, "message": f"搜索失败: {str(e)}"}
 
 
-@mcp.tool()
+# @mcp.tool()
 async def search_articles(keyword: str, ) -> Dict[str, Any]:
     """
     搜索笔记
@@ -299,7 +299,7 @@ async def search_articles(keyword: str, ) -> Dict[str, Any]:
         return {"success": False, "message": f"搜索失败: {str(e)}"}
 
 
-@mcp.tool()
+# @mcp.tool()
 async def get_article_content(article_url: str) -> Dict[str, Any]:
     """
     获取笔记内容
@@ -319,7 +319,7 @@ async def get_article_content(article_url: str) -> Dict[str, Any]:
         return {"success": False, "message": f"搜索失败: {str(e)}"}
 
 
-@mcp.tool()
+# @mcp.tool()
 async def view_article_comments(article_url: str, limit: int = 20) -> Dict[str, Any]:
     """
     查看小红书笔记的评论
